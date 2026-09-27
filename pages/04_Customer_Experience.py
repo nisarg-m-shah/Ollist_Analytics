@@ -222,4 +222,24 @@ def render_page_4():
     else:
         st.info("No segmentation data available for this dimension.")
 
+    st.markdown("<hr style='border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 1.5rem 0;'>", unsafe_allow_html=True)
+
+    # Transition to Page 5 (Conclusions & Recommendations)
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 12px; padding: 1.35rem;">
+        <div style="font-size: 1.05rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
+            <span>➡️</span> From Customer Experience to Conclusions
+        </div>
+        <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 0.35rem; line-height: 1.5;">
+            We've now seen business performance, customer and product intelligence, delivery operations, and how
+            delivery reliability shapes customer sentiment. <strong>The final question:</strong>
+            <em>taken together, what should the business actually do about it?</em>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<div style='margin-top: 0.75rem;'></div>", unsafe_allow_html=True)
+    if st.button("Continue to Conclusions & Recommendations →", use_container_width=True, type="primary"):
+        st.switch_page("pages/05_Conclusions_Recommendations.py")
+
 render_page_4()

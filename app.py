@@ -208,7 +208,8 @@ pages = [
     st.Page("pages/02_Customer_Product_Intelligence.py", title="02 Customer & Products", icon="👥"),
     st.Page("pages/03_Delivery_Analytics.py", title="03 Delivery Analytics", icon="🚚"),
     st.Page("pages/04_Customer_Experience.py", title="04 Customer Experience", icon="⭐"),
-    st.Page("pages/05_Work_Distribution.py", title="05 Work Distribution", icon="⚖️")
+    st.Page("pages/05_Conclusions_Recommendations.py", title="05 Conclusions & Recommendations", icon="🧭"),
+    st.Page("pages/06_Work_Distribution.py", title="06 Work Distribution", icon="⚖️")
 ]
 
 nav = st.navigation(pages)

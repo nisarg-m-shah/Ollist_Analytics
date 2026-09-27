@@ -396,3 +396,97 @@ def _empty_insight(title):
         'business_implication': 'Ensure filter parameters encompass active transaction segments.',
         'investigate': 'Verify filter selections in the sidebar.'
     }
+
+
+def generate_strategic_recommendations(exec_kpis, cust_kpis, deliv_kpis, rev_kpis, state_stats, freq_stats, seller_df, heatmap_df=None):
+    """
+    Generates the Page 5 Conclusions & Recommendations synthesis paragraph and a
+    prioritized, cross-page action list. Every number is pulled from the same
+    KPI/stat objects already computed on Pages 1-4, so this stays consistent with
+    whatever the sidebar filters are currently set to.
+    """
+    repeat_rate = cust_kpis.get("repeat_rate", 0.0)
+    ontime_pct = deliv_kpis.get("ontime_pct", 0.0)
+    avg_days_late = deliv_kpis.get("avg_days_late", 0.0)
+    rating_gap = rev_kpis.get("rating_gap", 0.0)
+    ontime_rating = rev_kpis.get("ontime_avg_rating", 0.0)
+    severe_rating = rev_kpis.get("severe_delay_rating", 0.0)
+    top_state = state_stats.get("top_state", "N/A")
+    top3_share = state_stats.get("top3_share", 0.0)
+    one_order_share = freq_stats.get("one_order_share", 0.0)
+
+    sellers_below_85 = 0.0
+    if seller_df is not None and not seller_df.empty:
+        sellers_below_85 = (seller_df["ontime_pct"] < 85).mean() * 100
+
+    handoff_finding = None
+    if heatmap_df is not None and not heatmap_df.empty:
+        max_val = heatmap_df.max().max()
+        min_val = heatmap_df.min().min()
+        max_pos = heatmap_df.stack().idxmax()
+        handoff_finding = (
+            f"Orders placed on {max_pos[0]} during the {max_pos[1]} window wait an average of "
+            f"{max_val:.1f} days for carrier pickup, versus {min_val:.1f} days at the fastest weekday/window."
+        )
+
+    synthesis = (
+        f"Olist generated {format_currency(exec_kpis.get('total_revenue', 0))} in revenue from "
+        f"{format_number(exec_kpis.get('total_orders', 0))} orders and {format_number(exec_kpis.get('unique_customers', 0))} "
+        f"customers under the current selection, led commercially by {top_state} (the top 3 states account for "
+        f"{top3_share:.1f}% of revenue). However, {one_order_share:.1f}% of customers are one-time buyers, and only "
+        f"{repeat_rate:.1f}% return for a second order. Separately, {ontime_pct:.1f}% of deliveries meet their promised "
+        f"date, and late shipments run {format_days(avg_days_late)} beyond schedule on average. Customer sentiment tracks "
+        f"this operational reality closely: the average review score falls from {format_rating(ontime_rating)} for "
+        f"on-time orders to {format_rating(severe_rating)} once a delay exceeds 8 days, a {rating_gap:.2f}-point collapse. "
+        f"The strategic priority is therefore not acquisition, but converting existing demand into repeat revenue by "
+        f"protecting delivery reliability."
+    )
+
+    recommendations = [
+        {
+            "priority": "High",
+            "pillar": "Customer Retention",
+            "headline": "Growth today is almost entirely acquisition-driven, not retention-driven.",
+            "evidence": f"Only {repeat_rate:.1f}% of customers place a second order; {one_order_share:.1f}% remain one-time buyers.",
+            "recommendation": "Launch a post-delivery re-engagement flow (a day 15-30 reminder or discount) targeted at first-time buyers, prioritized on categories with naturally repeatable consumption.",
+            "expected_impact": "Even a modest improvement in repeat rate compounds directly into revenue, since the buyer base is largely already acquired."
+        },
+        {
+            "priority": "High",
+            "pillar": "Delivery Reliability",
+            "headline": "Late deliveries are the strongest identified driver of poor customer sentiment.",
+            "evidence": f"{100 - ontime_pct:.1f}% of orders arrive late, and late shipments average {format_days(avg_days_late)} beyond the promised date.",
+            "recommendation": "Recalibrate estimated delivery date (EDD) padding by state or region instead of a single national buffer, and prioritize carrier renegotiation in the weakest corridors identified on the Delivery Analytics page.",
+            "expected_impact": "Reducing severe delays (8+ days) has an outsized effect on sentiment, given the sharp rating collapse observed at that threshold."
+        }
+    ]
+
+    if handoff_finding:
+        recommendations.append({
+            "priority": "Medium",
+            "pillar": "Fulfillment Operations",
+            "headline": "A weekend handoff gap is adding avoidable delay before the carrier is even involved.",
+            "evidence": handoff_finding,
+            "recommendation": "Introduce weekend or holiday carrier pickup windows, or incentivize seller-side weekend packing, so orders stop queuing until the following Tuesday.",
+            "expected_impact": "Closing this specific handoff gap would move a meaningful share of orders out of the slowest delay buckets."
+        })
+
+    recommendations.append({
+        "priority": "Medium",
+        "pillar": "Marketplace Seller Quality",
+        "headline": "Delivery reliability is a per-seller discipline issue, not a scale issue.",
+        "evidence": f"Approximately {sellers_below_85:.1f}% of active sellers operate below the 85% on-time benchmark, with reliability largely unrelated to order volume.",
+        "recommendation": "Introduce seller-level SLA scorecards feeding into marketplace search ranking, rather than ranking sellers by sales volume alone.",
+        "expected_impact": "Targets the root cause directly rather than treating late deliveries as a uniform, platform-wide problem."
+    })
+
+    recommendations.append({
+        "priority": "Medium",
+        "pillar": "Geographic Expansion",
+        "headline": "Commercial concentration and delivery weak points need to be solved together, not separately.",
+        "evidence": f"{top_state} and the next two largest states already contribute {top3_share:.1f}% of revenue, while several other states combine low customer density with weaker on-time performance.",
+        "recommendation": "Treat underperforming states as a fulfillment problem before a demand problem: prioritize regional distribution points over broad marketing spend where delivery reliability is currently weakest.",
+        "expected_impact": "Improves the delivery experience precisely where it is weakest today, rather than acquiring customers the network cannot yet serve reliably."
+    })
+
+    return {"synthesis": synthesis, "recommendations": recommendations}
