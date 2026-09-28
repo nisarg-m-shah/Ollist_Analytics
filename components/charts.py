@@ -351,6 +351,9 @@ def create_carrier_heatmap(pivot_df):
         text_auto=".1f"
     )
     
+    fig.update_xaxes(type="category")
+    fig.update_yaxes(type="category")
+    
     fig.update_layout(
         height=360,
         coloraxis_colorbar=dict(
