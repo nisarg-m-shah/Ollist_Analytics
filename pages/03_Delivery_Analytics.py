@@ -92,7 +92,7 @@ def render_page_3():
     # Insights
     deliv_insights = generate_delivery_insights(kpis, seller_df, heatmap_df, state_ontime_df, route_insights)
     
-    # Operational Alert Banner
+    # Operational Alert Bannera
     op_alert = deliv_insights['operational_alert']
     render_summary_banner(
         title=op_alert['title'],
