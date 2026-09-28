@@ -318,7 +318,7 @@ def generate_delivery_insights(kpis, seller_df, heatmap_df, state_ontime_df, rou
         
     return insights
 
-def generate_experience_insights(kpis, bucket_df, decomp_df, combo_df, selected_dim):
+def generate_experience_insights(kpis, bucket_df, decomp_df, combo_df, selected_dim, treemap_df=None):
     """Generates structured insights for Page 4 — Customer Experience & Reviews."""
     insights = {}
     
@@ -344,15 +344,21 @@ def generate_experience_insights(kpis, bucket_df, decomp_df, combo_df, selected_
     else:
         insights['ratings_collapse'] = _empty_insight('Ratings Collapse')
         
-    # 2. Treemap: Product Sales vs Customer Experience
-    insights['sales_vs_experience'] = {
-        'title': 'Product Category Sales vs Satisfaction Treemap',
-        'finding': 'High-volume categories disproportionately dictate overall platform customer perception.',
-        'evidence': 'Categories such as Bed & Bath & Table and Health & Beauty generate substantial sales volume while sustaining solid review averages (~4.0 - 4.2), whereas high-ticket tech categories show greater vulnerability to score variance.',
-        'interpretation': 'Marketplace brand perception is not dominated by niche product complaints, but rather by the consistency of top grossing categories.',
-        'business_implication': 'Prioritize packaging quality audits and logistics SLAs for the top 5 revenue categories to safeguard the majority of customer touchpoints.',
-        'investigate': 'Cross-reference product return rates and packaging damage claims within bulky furniture and electronics categories.'
-    }
+    # 2. Treemap: Product Sales vs Customer Experience (computed live from treemap_df, not hardcoded)
+    if treemap_df is not None and not treemap_df.empty:
+        top5 = treemap_df.head(5)
+        top_cat = top5.iloc[0]
+        weakest = top5.sort_values('avg_review_score').iloc[0]
+        insights['sales_vs_experience'] = {
+            'title': 'Product Category Sales vs Satisfaction Treemap',
+            'finding': 'High-volume categories disproportionately dictate overall platform customer perception.',
+            'evidence': f"'{top_cat['category_clean']}' is the single largest category by sales ({format_currency(top_cat['product_sales'])}, avg rating {format_rating(top_cat['avg_review_score'])}). Among the top 5 categories by sales, '{weakest['category_clean']}' has the weakest average rating at {format_rating(weakest['avg_review_score'])}.",
+            'interpretation': 'Marketplace brand perception is shaped mainly by how well the highest-revenue categories are served, not by isolated low-volume complaints.',
+            'business_implication': f"Prioritize packaging quality audits and logistics SLAs for '{weakest['category_clean']}' first, since it combines high commercial importance with comparatively weaker sentiment.",
+            'investigate': f"Cross-reference product return rates and packaging damage claims specifically within '{weakest['category_clean']}'."
+        }
+    else:
+        insights['sales_vs_experience'] = _empty_insight('Sales vs Experience')
     
     # 3. Low Rating Decomposition
     if not decomp_df.empty:
@@ -400,10 +406,11 @@ def _empty_insight(title):
 
 def generate_strategic_recommendations(exec_kpis, cust_kpis, deliv_kpis, rev_kpis, state_stats, freq_stats, seller_df, heatmap_df=None):
     """
-    Generates the Page 5 Conclusions & Recommendations synthesis paragraph and a
+    Generates the Conclusions & Recommendations page synthesis paragraph and a
     prioritized, cross-page action list. Every number is pulled from the same
-    KPI/stat objects already computed on Pages 1-4, so this stays consistent with
-    whatever the sidebar filters are currently set to.
+    KPI/stat objects already computed on the Executive Overview, Customer &
+    Product Intelligence, Delivery Analytics, and Customer Experience pages, so
+    this stays consistent with whatever the sidebar filters are currently set to.
     """
     repeat_rate = cust_kpis.get("repeat_rate", 0.0)
     ontime_pct = deliv_kpis.get("ontime_pct", 0.0)

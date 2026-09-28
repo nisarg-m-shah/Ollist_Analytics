@@ -204,12 +204,13 @@ def render_main_portal():
 # Setup Navigation with app.py as Main Page (default=True)
 pages = [
     st.Page(render_main_portal, title="00 Main Portal", icon="⚡", default=True),
-    st.Page("pages/01_Executive_Overview.py", title="01 Executive Overview", icon="📊"),
-    st.Page("pages/02_Customer_Product_Intelligence.py", title="02 Customer & Products", icon="👥"),
-    st.Page("pages/03_Delivery_Analytics.py", title="03 Delivery Analytics", icon="🚚"),
-    st.Page("pages/04_Customer_Experience.py", title="04 Customer Experience", icon="⭐"),
-    st.Page("pages/05_Conclusions_Recommendations.py", title="05 Conclusions & Recommendations", icon="🧭"),
-    st.Page("pages/06_Work_Distribution.py", title="06 Work Distribution", icon="⚖️")
+    st.Page("pages/01_Data_Preparation_Cleaning.py", title="01 Data Preparation", icon="🧹"),
+    st.Page("pages/02_Executive_Overview.py", title="02 Executive Overview", icon="📊"),
+    st.Page("pages/03_Customer_Product_Intelligence.py", title="03 Customer & Products", icon="👥"),
+    st.Page("pages/04_Delivery_Analytics.py", title="04 Delivery Analytics", icon="🚚"),
+    st.Page("pages/05_Customer_Experience.py", title="05 Customer Experience", icon="⭐"),
+    st.Page("pages/06_Conclusions_Recommendations.py", title="06 Conclusions & Recommendations", icon="🧭"),
+    st.Page("pages/07_Work_Distribution.py", title="07 Work Distribution", icon="⚖️")
 ]
 
 nav = st.navigation(pages)

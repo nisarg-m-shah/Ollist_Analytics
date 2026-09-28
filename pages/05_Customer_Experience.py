@@ -128,7 +128,7 @@ def render_page_4():
         if not treemap_df.empty:
             fig_tree = create_treemap_sales_experience(treemap_df)
             st.plotly_chart(fig_tree, use_container_width=True)
-            tree_ins = generate_experience_insights(kpis, bucket_df, pd.DataFrame(), combo_time_df, "")['sales_vs_experience']
+            tree_ins = generate_experience_insights(kpis, bucket_df, pd.DataFrame(), combo_time_df, "", treemap_df=treemap_df)['sales_vs_experience']
             render_insight_card(tree_ins)
         else:
             st.info("No category sales records found.")
@@ -224,7 +224,7 @@ def render_page_4():
 
     st.markdown("<hr style='border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 1.5rem 0;'>", unsafe_allow_html=True)
 
-    # Transition to Page 5 (Conclusions & Recommendations)
+    # Transition to Conclusions & Recommendations
     st.markdown("""
     <div style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 12px; padding: 1.35rem;">
         <div style="font-size: 1.05rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
@@ -240,6 +240,6 @@ def render_page_4():
 
     st.markdown("<div style='margin-top: 0.75rem;'></div>", unsafe_allow_html=True)
     if st.button("Continue to Conclusions & Recommendations →", use_container_width=True, type="primary"):
-        st.switch_page("pages/05_Conclusions_Recommendations.py")
+        st.switch_page("pages/06_Conclusions_Recommendations.py")
 
 render_page_4()

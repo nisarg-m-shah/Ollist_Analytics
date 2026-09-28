@@ -20,8 +20,8 @@ PRIORITY_STYLE = {
 def render_recommendation_card(rec):
     """
     Renders one strategic recommendation using the same insight-card visual
-    language as Pages 1-4, so this page feels like a continuation of the
-    dashboard rather than a bolted-on afterthought.
+    language as the rest of the app, so this page feels like a continuation
+    of the dashboard rather than a bolted-on afterthought.
     """
     card_type, priority_label = PRIORITY_STYLE.get(rec["priority"], ("default", rec["priority"].upper()))
 
@@ -54,7 +54,7 @@ def render_recommendation_card(rec):
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
-def render_page_5():
+def render_page_conclusions():
     css_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'assets', 'style.css')
     if os.path.exists(css_path):
         with open(css_path) as f:
@@ -90,7 +90,7 @@ def render_page_5():
         </div>
         """, unsafe_allow_html=True)
 
-    # Recompute the cross-page KPIs needed for the synthesis (same calls Pages 1-4 already make)
+    # Recompute the cross-page KPIs needed for the synthesis (same calls the earlier pages already make)
     exec_kpis = get_executive_kpis(orders_df, items_df, payments_df)
     cust_kpis = get_customer_kpis(orders_df, items_df)
     deliv_kpis = get_delivery_kpis(orders_df)
@@ -160,7 +160,7 @@ def render_page_5():
     st.markdown("""
     <div class="chart-header" style="margin-top: 1.25rem;">
         <h3 class="chart-title">Prioritized Strategic Recommendations</h3>
-        <div class="chart-subtitle">Ranked by urgency, each tied directly to a finding from Pages 1-4.</div>
+        <div class="chart-subtitle">Ranked by urgency, each tied directly to a finding from the earlier pages.</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -176,8 +176,8 @@ def render_page_5():
             <span>➡️</span> From Recommendations to Project Governance
         </div>
         <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 0.35rem; line-height: 1.5;">
-            That completes the analytical narrative: business performance, customer and product intelligence, delivery
-            operations, customer experience, and now the recommendations tying them together.
+            That completes the analytical narrative: data preparation, business performance, customer and product
+            intelligence, delivery operations, customer experience, and now the recommendations tying them together.
             The final page documents how this project itself was built and divided.
         </div>
     </div>
@@ -185,6 +185,6 @@ def render_page_5():
 
     st.markdown("<div style='margin-top: 0.75rem;'></div>", unsafe_allow_html=True)
     if st.button("Continue to Work Distribution →", use_container_width=True, type="primary"):
-        st.switch_page("pages/06_Work_Distribution.py")
+        st.switch_page("pages/07_Work_Distribution.py")
 
-render_page_5()
+render_page_conclusions()
