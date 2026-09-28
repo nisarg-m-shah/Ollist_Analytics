@@ -137,3 +137,4 @@ streamlit run app.py
 * **Visualizations:** [Plotly Graph Objects](https://plotly.com/python/) & [Plotly Express](https://plotly.com/python/plotly-express/)
 * **Cartography:** Plotly Choropleth with offline GeoJSON for all 27 Brazilian states (UF)
 * **BI Reference:** Microsoft Power BI
+# Ollist-Business-Intelligence
